@@ -21,12 +21,11 @@ namespace EmptyAPI.Controllers
         [HttpPost]
         public IActionResult CreateProduct(OrderCreateDto order)
         {
-            // Tez bazar yoxlanish yoxsa lazimi deyerleri databasaden bir bir yoxlayib o terzde elave etmek lazimdir. ....
-            if (order.CustomerName == null) return BadRequest("Customer name can't be null");
-            if (order.CustomerPhone == null) return BadRequest("Customer phone can't be null");
-            if (order.CountryName == null) return BadRequest("Country can't be null");
-            if (order.ProductName == null) return BadRequest("Product can't be null");
-            if (order.SegmentName == null) return BadRequest("Segment can't be null");
+
+            bool isNull = order.GetType().GetProperties().All(p => p.GetValue(order) != null);
+            if (!isNull) return BadRequest("Orders properties cant be null !");
+
+           
             if (order.TarifIds.Count < 1) return BadRequest("Minimum one tarif must be chossed");
 
 
@@ -57,20 +56,15 @@ namespace EmptyAPI.Controllers
             newOrder.ProductName = product.Name;
             newOrder.ProductCount = order.ProductCount;
 
-            List<Tariff> tariffs = new List<Tariff>();
-            double resultTax = 0;
 
             foreach (var id in order.TarifIds)
             {
                 var tarif = _context.Tariffs.FirstOrDefault(t => t.Id == id);
                 if (tarif != null)
                 {
-                    tariffs.Add(tarif);
-                    resultTax += tarif.TaxFeeSalt;
+                    newOrder.ProductPrice = product.Price * (tarif.TaxFeePercent / 100 );
                 }
             }
-
-            newOrder.ProductPrice = product.Price - resultTax;
 
             newOrder.TotalPrice = order.ProductCount * newOrder.ProductPrice;
 

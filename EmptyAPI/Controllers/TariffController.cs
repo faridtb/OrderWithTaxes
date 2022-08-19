@@ -27,7 +27,7 @@ namespace EmptyAPI.Controllers
             {
                 Name = tariff.Name,
                 Description = tariff.Description,
-                TaxFeeSalt = tariff.TaxFeeSalt
+                TaxFeePercent = tariff.TaxFeePercent
             };
 
             _context.Tariffs.Add(newTariff);

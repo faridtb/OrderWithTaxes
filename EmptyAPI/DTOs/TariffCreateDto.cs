@@ -9,6 +9,6 @@ namespace EmptyAPI.DTOs
     {
         public string Name { get; set; }
         public string Description { get; set; }
-        public double TaxFeeSalt { get; set; }
+        public double TaxFeePercent { get; set; }
     }
 }
